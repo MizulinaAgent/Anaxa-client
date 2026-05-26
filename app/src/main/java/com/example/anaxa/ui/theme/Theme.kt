@@ -33,6 +33,7 @@ fun AnaxaTheme(
     MaterialTheme(
         colorScheme = AnaxaColorScheme,
         typography = Typography,
+        shapes = Shapes,
         content = content
     )
 }
