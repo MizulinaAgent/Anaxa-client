@@ -12,11 +12,20 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.anaxa.ui.screens.auth.AuthScreen
 
 @Composable
 fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
     NavHost(navController = navController, startDestination = Routes.AUTH) {
-        composable(Routes.AUTH) { Placeholder("Авторизация") }
+        composable(Routes.AUTH) {
+            AuthScreen(
+                onAuthSuccess = {
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.AUTH) { inclusive = true }
+                    }
+                }
+            )
+        }
         composable(Routes.HOME) { Placeholder("Главная") }
         composable(
             Routes.LOTS,
