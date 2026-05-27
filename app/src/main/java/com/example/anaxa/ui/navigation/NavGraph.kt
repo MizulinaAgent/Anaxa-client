@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.anaxa.ui.screens.auth.AuthScreen
 import com.example.anaxa.ui.screens.home.HomeScreen
+import com.example.anaxa.ui.screens.lots.LotsScreen
 
 @Composable
 fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
@@ -38,7 +39,12 @@ fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
         composable(
             Routes.LOTS,
             arguments = listOf(navArgument("gameId") { type = NavType.IntType })
-        ) { Placeholder("Лоты") }
+        ) {
+            LotsScreen(
+                onBack = { navController.popBackStack() },
+                onLotClick = { lotId -> navController.navigate(Routes.lotDetail(lotId)) }
+            )
+        }
         composable(
             Routes.LOT_DETAIL,
             arguments = listOf(navArgument("lotId") { type = NavType.StringType })
