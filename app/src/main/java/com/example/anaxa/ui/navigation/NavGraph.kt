@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.anaxa.ui.screens.auth.AuthScreen
+import com.example.anaxa.ui.screens.home.HomeScreen
 
 @Composable
 fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
@@ -26,7 +27,14 @@ fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
                 }
             )
         }
-        composable(Routes.HOME) { Placeholder("Главная") }
+        composable(Routes.HOME) {
+            HomeScreen(
+                onGameClick = { gameId -> navController.navigate(Routes.lots(gameId)) },
+                onOrdersClick = { navController.navigate(Routes.ORDERS) },
+                onProfileClick = { navController.navigate(Routes.PROFILE) },
+                onCreateLotClick = { navController.navigate(Routes.CREATE_LOT) }
+            )
+        }
         composable(
             Routes.LOTS,
             arguments = listOf(navArgument("gameId") { type = NavType.IntType })
