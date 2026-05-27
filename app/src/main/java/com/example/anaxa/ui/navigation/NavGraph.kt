@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.anaxa.ui.screens.auth.AuthScreen
 import com.example.anaxa.ui.screens.home.HomeScreen
+import com.example.anaxa.ui.screens.createlot.CreateLotScreen
 import com.example.anaxa.ui.screens.lotdetail.LotDetailScreen
 import com.example.anaxa.ui.screens.lots.LotsScreen
 
@@ -58,7 +59,12 @@ fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
                 onSellerClick = { userId -> navController.navigate(Routes.userProfile(userId)) }
             )
         }
-        composable(Routes.CREATE_LOT) { Placeholder("Создать лот") }
+        composable(Routes.CREATE_LOT) {
+            CreateLotScreen(
+                onBack = { navController.popBackStack() },
+                onCreated = { navController.popBackStack() }
+            )
+        }
         composable(Routes.MY_LOTS) { Placeholder("Мои лоты") }
         composable(Routes.ORDERS) { Placeholder("Заказы") }
         composable(
