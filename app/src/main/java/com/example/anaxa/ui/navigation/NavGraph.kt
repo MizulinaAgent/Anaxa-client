@@ -17,6 +17,7 @@ import com.example.anaxa.ui.screens.home.HomeScreen
 import com.example.anaxa.ui.screens.createlot.CreateLotScreen
 import com.example.anaxa.ui.screens.lotdetail.LotDetailScreen
 import com.example.anaxa.ui.screens.lots.LotsScreen
+import com.example.anaxa.ui.screens.chat.ChatScreen
 import com.example.anaxa.ui.screens.mylots.MyLotsScreen
 import com.example.anaxa.ui.screens.orders.OrdersScreen
 
@@ -83,7 +84,9 @@ fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
         composable(
             Routes.CHAT,
             arguments = listOf(navArgument("orderId") { type = NavType.StringType })
-        ) { Placeholder("Чат") }
+        ) {
+            ChatScreen(onBack = { navController.popBackStack() })
+        }
         composable(Routes.PROFILE) { Placeholder("Профиль") }
         composable(
             Routes.USER_PROFILE,
