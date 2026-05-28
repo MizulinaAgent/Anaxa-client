@@ -17,6 +17,7 @@ import com.example.anaxa.ui.screens.home.HomeScreen
 import com.example.anaxa.ui.screens.createlot.CreateLotScreen
 import com.example.anaxa.ui.screens.lotdetail.LotDetailScreen
 import com.example.anaxa.ui.screens.lots.LotsScreen
+import com.example.anaxa.ui.screens.mylots.MyLotsScreen
 
 @Composable
 fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
@@ -33,6 +34,7 @@ fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
         composable(Routes.HOME) {
             HomeScreen(
                 onGameClick = { gameId -> navController.navigate(Routes.lots(gameId)) },
+                onMyLotsClick = { navController.navigate(Routes.MY_LOTS) },
                 onOrdersClick = { navController.navigate(Routes.ORDERS) },
                 onProfileClick = { navController.navigate(Routes.PROFILE) },
                 onCreateLotClick = { navController.navigate(Routes.CREATE_LOT) }
@@ -65,7 +67,12 @@ fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
                 onCreated = { navController.popBackStack() }
             )
         }
-        composable(Routes.MY_LOTS) { Placeholder("Мои лоты") }
+        composable(Routes.MY_LOTS) {
+            MyLotsScreen(
+                onBack = { navController.popBackStack() },
+                onLotClick = { lotId -> navController.navigate(Routes.lotDetail(lotId)) }
+            )
+        }
         composable(Routes.ORDERS) { Placeholder("Заказы") }
         composable(
             Routes.CHAT,

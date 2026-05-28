@@ -12,8 +12,8 @@ class LotsRepositoryImpl @Inject constructor(
     private val api: LotsApi
 ) : LotsRepository {
 
-    override suspend fun getLots(categoryId: Int?, status: String?): Result<List<Lot>> =
-        runCatching { api.getLots(categoryId, status).map { it.toDomain() } }
+    override suspend fun getLots(categoryId: Int?, status: String?, sellerId: String?): Result<List<Lot>> =
+        runCatching { api.getLots(categoryId, status, sellerId).map { it.toDomain() } }
 
     override suspend fun getLot(id: String): Result<Lot> =
         runCatching { api.getLot(id).toDomain() }

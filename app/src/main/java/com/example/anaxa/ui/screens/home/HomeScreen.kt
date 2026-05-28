@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -39,6 +40,7 @@ import com.example.anaxa.ui.theme.NeonMint
 @Composable
 fun HomeScreen(
     onGameClick: (Int) -> Unit,
+    onMyLotsClick: () -> Unit,
     onOrdersClick: () -> Unit,
     onProfileClick: () -> Unit,
     onCreateLotClick: () -> Unit,
@@ -58,6 +60,9 @@ fun HomeScreen(
                     )
                 },
                 actions = {
+                    IconButton(onClick = onMyLotsClick) {
+                        Icon(Icons.Filled.Storefront, contentDescription = "Мои лоты", tint = NeonEmerald)
+                    }
                     IconButton(onClick = onOrdersClick) {
                         Icon(Icons.Filled.ShoppingBag, contentDescription = "Заказы", tint = NeonEmerald)
                     }

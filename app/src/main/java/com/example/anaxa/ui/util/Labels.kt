@@ -8,6 +8,13 @@ fun categoryLabel(type: String): String = when (type) {
     else -> type
 }
 
+fun lotStatusLabel(status: String): String = when (status) {
+    "active" -> "Активен"
+    "sold" -> "Продан"
+    "hidden" -> "Скрыт"
+    else -> status
+}
+
 fun orderStatusLabel(status: String): String = when (status) {
     "pending" -> "Ожидает"
     "paid" -> "Оплачен"

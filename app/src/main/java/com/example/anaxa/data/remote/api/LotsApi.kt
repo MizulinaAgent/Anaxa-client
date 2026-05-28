@@ -15,7 +15,8 @@ interface LotsApi {
     @GET("lots")
     suspend fun getLots(
         @Query("categoryId") categoryId: Int? = null,
-        @Query("status") status: String? = null
+        @Query("status") status: String? = null,
+        @Query("sellerId") sellerId: String? = null
     ): List<LotDto>
 
     @GET("lots/{id}")
