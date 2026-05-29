@@ -20,6 +20,7 @@ import com.example.anaxa.ui.screens.lots.LotsScreen
 import com.example.anaxa.ui.screens.chat.ChatScreen
 import com.example.anaxa.ui.screens.mylots.MyLotsScreen
 import com.example.anaxa.ui.screens.orders.OrdersScreen
+import com.example.anaxa.ui.screens.profile.ProfileScreen
 
 @Composable
 fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
@@ -87,11 +88,25 @@ fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
         ) {
             ChatScreen(onBack = { navController.popBackStack() })
         }
-        composable(Routes.PROFILE) { Placeholder("Профиль") }
+        composable(Routes.PROFILE) {
+            ProfileScreen(
+                onBack = { navController.popBackStack() },
+                onLoggedOut = {
+                    navController.navigate(Routes.AUTH) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
         composable(
             Routes.USER_PROFILE,
             arguments = listOf(navArgument("userId") { type = NavType.StringType })
-        ) { Placeholder("Профиль пользователя") }
+        ) {
+            ProfileScreen(
+                onBack = { navController.popBackStack() },
+                onLoggedOut = {}
+            )
+        }
     }
 }
 

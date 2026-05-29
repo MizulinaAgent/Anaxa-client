@@ -7,6 +7,7 @@ import com.example.anaxa.data.remote.dto.UserDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface AuthApi {
     @POST("auth/register")
@@ -17,4 +18,7 @@ interface AuthApi {
 
     @GET("auth/me")
     suspend fun me(): UserDto
+
+    @GET("users/{id}")
+    suspend fun getUser(@Path("id") id: String): UserDto
 }

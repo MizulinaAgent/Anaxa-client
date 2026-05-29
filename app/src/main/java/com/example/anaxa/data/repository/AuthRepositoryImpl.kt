@@ -32,6 +32,9 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun getMe(): Result<User> = runCatching { api.me().toDomain() }
 
+    override suspend fun getUser(userId: String): Result<User> =
+        runCatching { api.getUser(userId).toDomain() }
+
     override suspend fun logout() {
         tokenDataStore.clear()
     }
