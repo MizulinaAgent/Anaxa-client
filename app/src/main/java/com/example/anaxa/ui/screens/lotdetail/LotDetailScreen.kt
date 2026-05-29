@@ -47,7 +47,6 @@ import com.example.anaxa.ui.theme.Surface
 import com.example.anaxa.ui.theme.SurfaceVariant
 import com.example.anaxa.ui.theme.TextMuted
 import com.example.anaxa.ui.theme.TextSecondary
-import com.example.anaxa.ui.util.categoryLabel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
