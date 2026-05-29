@@ -14,6 +14,7 @@ import com.example.anaxa.domain.repository.OrdersRepository
 import com.example.anaxa.domain.repository.ReviewsRepository
 import com.example.anaxa.ui.util.toUserMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -53,6 +54,22 @@ class ChatViewModel @Inject constructor(
 
     init {
         load()
+        startPolling()
+    }
+
+    private fun startPolling() {
+        viewModelScope.launch {
+            while (true) {
+                delay(4000)
+                if (!state.isLoading && !state.isSending) {
+                    messagesRepository.getMessages(orderId).onSuccess {
+                        if (it.size != state.messages.size) {
+                            state = state.copy(messages = it)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun load() {
