@@ -1,5 +1,6 @@
 package com.example.anaxa.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,16 +21,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.anaxa.R
 import com.example.anaxa.domain.model.Game
 import com.example.anaxa.domain.model.Lot
 import com.example.anaxa.ui.theme.EmeraldGradient
 import com.example.anaxa.ui.theme.NeonEmerald
 import com.example.anaxa.ui.theme.Surface
 import com.example.anaxa.ui.theme.TextMuted
+
+private fun gameIconRes(name: String): Int? = when (name) {
+    "Genshin Impact" -> R.drawable.game_genshin
+    "Counter-Strike 2" -> R.drawable.game_cs2
+    "Dota 2" -> R.drawable.game_dota2
+    "Brawl Stars" -> R.drawable.game_brawl
+    "World of Warcraft" -> R.drawable.game_wow
+    else -> null
+}
 
 @Composable
 fun GameCard(game: Game, onClick: () -> Unit, modifier: Modifier = Modifier) {
@@ -47,8 +59,18 @@ fun GameCard(game: Game, onClick: () -> Unit, modifier: Modifier = Modifier) {
                     .background(EmeraldGradient),
                 contentAlignment = Alignment.Center
             ) {
-                if (!game.iconUrl.isNullOrBlank()) {
-                    AsyncImage(
+                val iconRes = gameIconRes(game.name)
+                when {
+                    iconRes != null -> Image(
+                        painter = painterResource(iconRes),
+                        contentDescription = game.name,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .padding(12.dp)
+                    )
+                    !game.iconUrl.isNullOrBlank() -> AsyncImage(
                         model = game.iconUrl,
                         contentDescription = game.name,
                         contentScale = ContentScale.Fit,
@@ -57,8 +79,7 @@ fun GameCard(game: Game, onClick: () -> Unit, modifier: Modifier = Modifier) {
                             .aspectRatio(1f)
                             .padding(12.dp)
                     )
-                } else {
-                    Text(
+                    else -> Text(
                         text = game.name.take(1).uppercase(),
                         style = MaterialTheme.typography.headlineLarge,
                         color = com.example.anaxa.ui.theme.Background,
