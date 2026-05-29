@@ -7,6 +7,7 @@ data class Lot(
     val title: String,
     val description: String?,
     val price: Double,
+    val quantity: Int,
     val status: String,
     val createdAt: String
 )

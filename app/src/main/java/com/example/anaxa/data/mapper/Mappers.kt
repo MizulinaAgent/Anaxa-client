@@ -28,6 +28,7 @@ fun LotDto.toDomain() = Lot(
     title = title,
     description = description,
     price = price,
+    quantity = quantity,
     status = status,
     createdAt = createdAt
 )
@@ -37,6 +38,7 @@ fun OrderDto.toDomain() = Order(
     lot = lot.toDomain(),
     buyer = buyer.toDomain(),
     seller = seller.toDomain(),
+    quantity = quantity,
     status = status,
     createdAt = createdAt
 )

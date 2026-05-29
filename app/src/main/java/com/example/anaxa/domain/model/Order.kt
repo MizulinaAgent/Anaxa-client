@@ -5,6 +5,7 @@ data class Order(
     val lot: Lot,
     val buyer: User,
     val seller: User,
+    val quantity: Int,
     val status: String,
     val createdAt: String
 )

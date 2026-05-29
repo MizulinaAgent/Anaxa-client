@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 data class LotDetailUiState(
     val lot: Lot? = null,
+    val quantity: Int = 1,
     val isLoading: Boolean = false,
     val error: String? = null,
     val isBuying: Boolean = false,
@@ -49,11 +50,16 @@ class LotDetailViewModel @Inject constructor(
         }
     }
 
+    fun setQuantity(value: Int) {
+        val max = state.lot?.quantity ?: 1
+        state = state.copy(quantity = value.coerceIn(1, maxOf(1, max)))
+    }
+
     fun buy() {
         if (state.isBuying) return
         viewModelScope.launch {
             state = state.copy(isBuying = true, buyError = null)
-            ordersRepository.createOrder(lotId).fold(
+            ordersRepository.createOrder(lotId, state.quantity).fold(
                 onSuccess = { state = state.copy(isBuying = false, createdOrderId = it.id) },
                 onFailure = { state = state.copy(isBuying = false, buyError = it.toUserMessage()) }
             )

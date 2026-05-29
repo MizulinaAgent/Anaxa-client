@@ -22,9 +22,10 @@ class LotsRepositoryImpl @Inject constructor(
         categoryId: Int,
         title: String,
         description: String?,
-        price: Double
+        price: Double,
+        quantity: Int
     ): Result<Lot> = runCatching {
-        api.createLot(LotRequest(categoryId, title, description, price)).toDomain()
+        api.createLot(LotRequest(categoryId, title, description, price, quantity)).toDomain()
     }
 
     override suspend fun updateLot(
@@ -32,9 +33,10 @@ class LotsRepositoryImpl @Inject constructor(
         title: String?,
         description: String?,
         price: Double?,
+        quantity: Int?,
         status: String?
     ): Result<Lot> = runCatching {
-        api.updateLot(id, LotUpdateRequest(title, description, price, status)).toDomain()
+        api.updateLot(id, LotUpdateRequest(title, description, price, quantity, status)).toDomain()
     }
 
     override suspend fun deleteLot(id: String): Result<Unit> =

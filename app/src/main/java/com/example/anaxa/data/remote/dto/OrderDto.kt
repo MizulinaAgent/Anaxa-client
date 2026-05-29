@@ -3,7 +3,7 @@ package com.example.anaxa.data.remote.dto
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class OrderRequest(val lotId: String)
+data class OrderRequest(val lotId: String, val quantity: Int = 1)
 
 @Serializable
 data class OrderStatusRequest(val status: String)
@@ -14,6 +14,7 @@ data class OrderDto(
     val lot: LotDto,
     val buyer: UserDto,
     val seller: UserDto,
+    val quantity: Int = 1,
     val status: String,
     val createdAt: String
 )

@@ -22,6 +22,7 @@ data class CreateLotUiState(
     val title: String = "",
     val description: String = "",
     val price: String = "",
+    val quantity: String = "1",
     val isLoading: Boolean = false,
     val isSubmitting: Boolean = false,
     val error: String? = null,
@@ -32,7 +33,8 @@ data class CreateLotUiState(
 
     val canSubmit: Boolean
         get() = selectedCategoryId != null && title.isNotBlank() &&
-            (price.toDoubleOrNull() ?: 0.0) > 0.0
+            (price.toDoubleOrNull() ?: 0.0) > 0.0 &&
+            (quantity.toIntOrNull() ?: 0) >= 1
 }
 
 @HiltViewModel
@@ -72,6 +74,7 @@ class CreateLotViewModel @Inject constructor(
     fun onTitleChange(value: String) { state = state.copy(title = value, error = null) }
     fun onDescriptionChange(value: String) { state = state.copy(description = value) }
     fun onPriceChange(value: String) { state = state.copy(price = value.filter { it.isDigit() || it == '.' }) }
+    fun onQuantityChange(value: String) { state = state.copy(quantity = value.filter { it.isDigit() }) }
 
     fun submit() {
         val current = state
@@ -82,7 +85,8 @@ class CreateLotViewModel @Inject constructor(
                 categoryId = current.selectedCategoryId!!,
                 title = current.title.trim(),
                 description = current.description.trim().ifBlank { null },
-                price = current.price.toDouble()
+                price = current.price.toDouble(),
+                quantity = current.quantity.toInt()
             ).fold(
                 onSuccess = { state = state.copy(isSubmitting = false, created = true) },
                 onFailure = { state = state.copy(isSubmitting = false, error = it.toUserMessage()) }

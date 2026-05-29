@@ -12,8 +12,8 @@ class OrdersRepositoryImpl @Inject constructor(
     private val api: OrdersApi
 ) : OrdersRepository {
 
-    override suspend fun createOrder(lotId: String): Result<Order> =
-        runCatching { api.createOrder(OrderRequest(lotId)).toDomain() }
+    override suspend fun createOrder(lotId: String, quantity: Int): Result<Order> =
+        runCatching { api.createOrder(OrderRequest(lotId, quantity)).toDomain() }
 
     override suspend fun getOrder(id: String): Result<Order> =
         runCatching { api.getOrder(id).toDomain() }
