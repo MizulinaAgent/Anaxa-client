@@ -25,6 +25,7 @@ data class LotDto(
     val id: String,
     val seller: UserDto,
     val categoryId: Int,
+    val categoryType: String = "",
     val title: String,
     val description: String? = null,
     val price: Double,

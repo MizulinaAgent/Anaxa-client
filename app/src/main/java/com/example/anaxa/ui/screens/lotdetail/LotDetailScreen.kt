@@ -47,6 +47,7 @@ import com.example.anaxa.ui.theme.Surface
 import com.example.anaxa.ui.theme.SurfaceVariant
 import com.example.anaxa.ui.theme.TextMuted
 import com.example.anaxa.ui.theme.TextSecondary
+import com.example.anaxa.ui.util.categoryLabel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,6 +131,17 @@ fun LotDetailScreen(
                         style = MaterialTheme.typography.headlineMedium,
                         color = TextSecondary
                     )
+                    if (lot.categoryType.isNotBlank()) {
+                        Text(
+                            text = categoryLabel(lot.categoryType),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = NeonEmerald,
+                            modifier = Modifier
+                                .clip(MaterialTheme.shapes.small)
+                                .background(SurfaceVariant)
+                                .padding(horizontal = 12.dp, vertical = 6.dp)
+                        )
+                    }
                     Text(
                         text = "%.0f ₽".format(lot.price),
                         style = MaterialTheme.typography.headlineLarge,

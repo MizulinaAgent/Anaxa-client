@@ -25,6 +25,7 @@ fun LotDto.toDomain() = Lot(
     id = id,
     seller = seller.toDomain(),
     categoryId = categoryId,
+    categoryType = categoryType,
     title = title,
     description = description,
     price = price,
