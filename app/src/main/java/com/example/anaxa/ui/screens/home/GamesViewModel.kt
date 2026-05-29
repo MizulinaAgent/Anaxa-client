@@ -7,8 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.anaxa.domain.model.Game
 import com.example.anaxa.domain.repository.GamesRepository
+import com.example.anaxa.domain.repository.OrdersRepository
 import com.example.anaxa.ui.util.toUserMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,7 +18,8 @@ data class GamesUiState(
     val games: List<Game> = emptyList(),
     val query: String = "",
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val unreadOrders: Int = 0
 ) {
     val filtered: List<Game>
         get() = if (query.isBlank()) games
@@ -25,7 +28,8 @@ data class GamesUiState(
 
 @HiltViewModel
 class GamesViewModel @Inject constructor(
-    private val gamesRepository: GamesRepository
+    private val gamesRepository: GamesRepository,
+    private val ordersRepository: OrdersRepository
 ) : ViewModel() {
 
     var state by mutableStateOf(GamesUiState())
@@ -33,6 +37,19 @@ class GamesViewModel @Inject constructor(
 
     init {
         loadGames()
+        startUnreadPolling()
+    }
+
+    private fun startUnreadPolling() {
+        viewModelScope.launch {
+            while (true) {
+                val buyer = ordersRepository.getMyOrders("buyer").getOrNull().orEmpty()
+                val seller = ordersRepository.getMyOrders("seller").getOrNull().orEmpty()
+                val total = buyer.sumOf { it.unreadCount } + seller.sumOf { it.unreadCount }
+                state = state.copy(unreadOrders = total)
+                delay(7000)
+            }
+        }
     }
 
     fun loadGames() {

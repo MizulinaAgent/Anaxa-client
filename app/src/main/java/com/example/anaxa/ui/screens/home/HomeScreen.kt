@@ -13,6 +13,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.Storefront
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -64,7 +66,17 @@ fun HomeScreen(
                         Icon(Icons.Filled.Storefront, contentDescription = "Мои лоты", tint = NeonEmerald)
                     }
                     IconButton(onClick = onOrdersClick) {
-                        Icon(Icons.Filled.ShoppingBag, contentDescription = "Заказы", tint = NeonEmerald)
+                        BadgedBox(
+                            badge = {
+                                if (state.unreadOrders > 0) {
+                                    Badge(containerColor = NeonEmerald, contentColor = Background) {
+                                        Text(if (state.unreadOrders > 9) "9+" else state.unreadOrders.toString())
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(Icons.Filled.ShoppingBag, contentDescription = "Заказы", tint = NeonEmerald)
+                        }
                     }
                     IconButton(onClick = onProfileClick) {
                         Icon(Icons.Filled.Person, contentDescription = "Профиль", tint = NeonEmerald)

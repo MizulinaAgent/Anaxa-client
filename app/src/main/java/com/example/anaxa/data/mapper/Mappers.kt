@@ -41,6 +41,7 @@ fun OrderDto.toDomain() = Order(
     seller = seller.toDomain(),
     quantity = quantity,
     status = status,
+    unreadCount = unreadCount,
     createdAt = createdAt
 )
 

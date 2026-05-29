@@ -7,5 +7,6 @@ data class Order(
     val seller: User,
     val quantity: Int,
     val status: String,
+    val unreadCount: Int,
     val createdAt: String
 )

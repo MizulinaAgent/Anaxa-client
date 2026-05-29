@@ -3,12 +3,15 @@ package com.example.anaxa.ui.screens.orders
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -77,12 +80,12 @@ fun OrdersScreen(
                 Tab(
                     selected = state.role == "buyer",
                     onClick = { viewModel.setRole("buyer") },
-                    text = { Text("Покупки") }
+                    text = { TabLabel("Покупки", state.buyerUnread) }
                 )
                 Tab(
                     selected = state.role == "seller",
                     onClick = { viewModel.setRole("seller") },
-                    text = { Text("Продажи") }
+                    text = { TabLabel("Продажи", state.sellerUnread) }
                 )
             }
 
@@ -110,6 +113,40 @@ fun OrdersScreen(
 }
 
 @Composable
+private fun TabLabel(text: String, unread: Int) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(text)
+        if (unread > 0) {
+            Box(
+                modifier = Modifier
+                    .padding(start = 6.dp)
+                    .size(8.dp)
+                    .clip(CircleShape)
+                    .background(NeonEmerald)
+            )
+        }
+    }
+}
+
+@Composable
+private fun UnreadBadge(count: Int, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .clip(CircleShape)
+            .background(NeonEmerald)
+            .size(22.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = if (count > 9) "9+" else count.toString(),
+            style = MaterialTheme.typography.labelSmall,
+            color = Background,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
 private fun OrderCard(order: Order, myRole: String, onClick: () -> Unit) {
     val counterparty = if (myRole == "seller") order.buyer else order.seller
     val counterpartyLabel = if (myRole == "seller") "Покупатель" else "Продавец"
@@ -132,6 +169,9 @@ private fun OrderCard(order: Order, myRole: String, onClick: () -> Unit) {
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
+                if (order.unreadCount > 0) {
+                    UnreadBadge(order.unreadCount, modifier = Modifier.padding(start = 8.dp))
+                }
                 Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 8.dp)) {
                     Text(
                         text = "%.0f ₽".format(order.lot.price * order.quantity),

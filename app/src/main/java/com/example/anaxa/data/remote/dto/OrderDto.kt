@@ -16,5 +16,6 @@ data class OrderDto(
     val seller: UserDto,
     val quantity: Int = 1,
     val status: String,
+    val unreadCount: Int = 0,
     val createdAt: String
 )
