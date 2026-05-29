@@ -7,26 +7,40 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.anaxa.domain.model.Message
+import com.example.anaxa.domain.model.Order
 import com.example.anaxa.domain.repository.AuthRepository
 import com.example.anaxa.domain.repository.MessagesRepository
+import com.example.anaxa.domain.repository.OrdersRepository
+import com.example.anaxa.domain.repository.ReviewsRepository
 import com.example.anaxa.ui.util.toUserMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ChatUiState(
+    val order: Order? = null,
     val messages: List<Message> = emptyList(),
     val currentUserId: String? = null,
     val draft: String = "",
     val isLoading: Boolean = false,
     val isSending: Boolean = false,
+    val isCompleting: Boolean = false,
+    val isSubmittingReview: Boolean = false,
+    val reviewSubmitted: Boolean = false,
     val error: String? = null
-)
+) {
+    val isOwnSeller: Boolean get() = order != null && order.seller.id == currentUserId
+    val isOwnBuyer: Boolean get() = order != null && order.buyer.id == currentUserId
+    val canComplete: Boolean get() = isOwnSeller && order?.status != "completed"
+    val canReview: Boolean get() = isOwnBuyer && order?.status == "completed" && !reviewSubmitted
+}
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val messagesRepository: MessagesRepository,
+    private val ordersRepository: OrdersRepository,
+    private val reviewsRepository: ReviewsRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -43,9 +57,25 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             state = state.copy(isLoading = true, error = null)
             val me = authRepository.getMe().getOrNull()
-            messagesRepository.getMessages(orderId).fold(
+            val order = ordersRepository.getOrder(orderId).getOrNull()
+            val messagesResult = messagesRepository.getMessages(orderId)
+
+            val alreadyReviewed = if (order != null && me != null && order.buyer.id == me.id) {
+                reviewsRepository.getUserReviews(order.seller.id)
+                    .getOrNull()
+                    ?.any { it.orderId == orderId && it.reviewer.id == me.id }
+                    ?: false
+            } else false
+
+            messagesResult.fold(
                 onSuccess = {
-                    state = state.copy(isLoading = false, currentUserId = me?.id, messages = it)
+                    state = state.copy(
+                        isLoading = false,
+                        currentUserId = me?.id,
+                        order = order,
+                        messages = it,
+                        reviewSubmitted = alreadyReviewed
+                    )
                 },
                 onFailure = {
                     state = state.copy(isLoading = false, error = it.toUserMessage())
@@ -72,6 +102,34 @@ class ChatViewModel @Inject constructor(
                 onFailure = {
                     state = state.copy(isSending = false, error = it.toUserMessage())
                 }
+            )
+        }
+    }
+
+    fun completeOrder() {
+        if (state.isCompleting) return
+        viewModelScope.launch {
+            state = state.copy(isCompleting = true, error = null)
+            ordersRepository.updateStatus(orderId, "completed").fold(
+                onSuccess = { state = state.copy(isCompleting = false, order = it) },
+                onFailure = { state = state.copy(isCompleting = false, error = it.toUserMessage()) }
+            )
+        }
+    }
+
+    fun submitReview(rating: Int, comment: String) {
+        val order = state.order ?: return
+        if (state.isSubmittingReview || rating !in 1..5) return
+        viewModelScope.launch {
+            state = state.copy(isSubmittingReview = true, error = null)
+            reviewsRepository.createReview(
+                orderId = orderId,
+                revieweeId = order.seller.id,
+                rating = rating,
+                comment = comment.trim().ifBlank { null }
+            ).fold(
+                onSuccess = { state = state.copy(isSubmittingReview = false, reviewSubmitted = true) },
+                onFailure = { state = state.copy(isSubmittingReview = false, error = it.toUserMessage()) }
             )
         }
     }

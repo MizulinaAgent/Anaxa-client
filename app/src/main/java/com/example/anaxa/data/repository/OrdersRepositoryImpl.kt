@@ -15,6 +15,9 @@ class OrdersRepositoryImpl @Inject constructor(
     override suspend fun createOrder(lotId: String): Result<Order> =
         runCatching { api.createOrder(OrderRequest(lotId)).toDomain() }
 
+    override suspend fun getOrder(id: String): Result<Order> =
+        runCatching { api.getOrder(id).toDomain() }
+
     override suspend fun getMyOrders(role: String): Result<List<Order>> =
         runCatching { api.getMyOrders(role).map { it.toDomain() } }
 

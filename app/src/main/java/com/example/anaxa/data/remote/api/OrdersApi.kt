@@ -14,6 +14,9 @@ interface OrdersApi {
     @POST("orders")
     suspend fun createOrder(@Body body: OrderRequest): OrderDto
 
+    @GET("orders/{id}")
+    suspend fun getOrder(@Path("id") id: String): OrderDto
+
     @GET("orders/my")
     suspend fun getMyOrders(@Query("role") role: String): List<OrderDto>
 

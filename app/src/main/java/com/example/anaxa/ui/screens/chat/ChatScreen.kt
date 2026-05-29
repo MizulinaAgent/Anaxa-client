@@ -19,6 +19,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,6 +36,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +49,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.anaxa.domain.model.Message
+import com.example.anaxa.ui.components.AnaxaButton
 import com.example.anaxa.ui.components.ErrorView
 import com.example.anaxa.ui.components.LoadingIndicator
 import com.example.anaxa.ui.theme.Background
@@ -48,6 +58,7 @@ import com.example.anaxa.ui.theme.Surface
 import com.example.anaxa.ui.theme.SurfaceVariant
 import com.example.anaxa.ui.theme.TextMuted
 import com.example.anaxa.ui.theme.TextSecondary
+import com.example.anaxa.ui.util.orderStatusLabel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,16 +136,136 @@ fun ChatScreen(
             state.isLoading -> LoadingIndicator(modifier = Modifier.padding(padding))
             state.error != null && state.messages.isEmpty() ->
                 ErrorView(state.error, modifier = Modifier.padding(padding), onRetry = viewModel::load)
-            else -> LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(state.messages) { message ->
-                    MessageBubble(message = message, isOwn = message.sender.id == state.currentUserId)
+            else -> Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+                if (state.order != null) {
+                    OrderBanner(
+                        statusLabel = orderStatusLabel(state.order!!.status),
+                        lotTitle = state.order!!.lot.title,
+                        showComplete = state.canComplete,
+                        isCompleting = state.isCompleting,
+                        onComplete = viewModel::completeOrder
+                    )
+                }
+                if (state.canReview) {
+                    ReviewComposer(
+                        isSubmitting = state.isSubmittingReview,
+                        onSubmit = viewModel::submitReview
+                    )
+                } else if (state.reviewSubmitted) {
+                    Text(
+                        text = "Отзыв оставлен",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = NeonEmerald,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    )
+                }
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(state.messages) { message ->
+                        MessageBubble(message = message, isOwn = message.sender.id == state.currentUserId)
+                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun OrderBanner(
+    statusLabel: String,
+    lotTitle: String,
+    showComplete: Boolean,
+    isCompleting: Boolean,
+    onComplete: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
+        colors = CardDefaults.cardColors(containerColor = Surface)
+    ) {
+        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = lotTitle,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextSecondary,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = statusLabel,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = TextSecondary,
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.small)
+                        .background(SurfaceVariant)
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                )
+            }
+            if (showComplete) {
+                AnaxaButton(
+                    text = "Завершить заказ",
+                    onClick = onComplete,
+                    loading = isCompleting
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReviewComposer(
+    isSubmitting: Boolean,
+    onSubmit: (rating: Int, comment: String) -> Unit
+) {
+    var rating by remember { mutableIntStateOf(5) }
+    var comment by remember { mutableStateOf("") }
+
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
+        colors = CardDefaults.cardColors(containerColor = Surface)
+    ) {
+        Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(
+                text = "Оставить отзыв продавцу",
+                style = MaterialTheme.typography.titleMedium,
+                color = TextSecondary
+            )
+            Row {
+                for (i in 1..5) {
+                    IconButton(onClick = { rating = i }, modifier = Modifier.size(36.dp)) {
+                        Icon(
+                            imageVector = if (i <= rating) Icons.Filled.Star else Icons.Outlined.StarOutline,
+                            contentDescription = null,
+                            tint = NeonEmerald
+                        )
+                    }
+                }
+            }
+            OutlinedTextField(
+                value = comment,
+                onValueChange = { comment = it },
+                placeholder = { Text("Комментарий (необязательно)", color = TextMuted) },
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.small,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = NeonEmerald,
+                    unfocusedBorderColor = SurfaceVariant,
+                    focusedContainerColor = Background,
+                    unfocusedContainerColor = Background
+                )
+            )
+            AnaxaButton(
+                text = "Отправить отзыв",
+                onClick = { onSubmit(rating, comment) },
+                loading = isSubmitting
+            )
         }
     }
 }
