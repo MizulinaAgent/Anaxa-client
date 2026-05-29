@@ -16,7 +16,8 @@ import javax.inject.Inject
 data class MyLotsUiState(
     val lots: List<Lot> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val message: String? = null
 )
 
 @HiltViewModel
@@ -50,9 +51,18 @@ class MyLotsViewModel @Inject constructor(
     fun delete(lotId: String) {
         viewModelScope.launch {
             lotsRepository.deleteLot(lotId).fold(
-                onSuccess = { state = state.copy(lots = state.lots.filterNot { it.id == lotId }) },
-                onFailure = { state = state.copy(error = it.toUserMessage()) }
+                onSuccess = {
+                    state = state.copy(
+                        lots = state.lots.filterNot { it.id == lotId },
+                        message = "Лот удалён"
+                    )
+                },
+                onFailure = { state = state.copy(message = it.toUserMessage()) }
             )
         }
+    }
+
+    fun consumeMessage() {
+        state = state.copy(message = null)
     }
 }

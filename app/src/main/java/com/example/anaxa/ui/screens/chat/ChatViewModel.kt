@@ -29,7 +29,8 @@ data class ChatUiState(
     val isRefunding: Boolean = false,
     val isSubmittingReview: Boolean = false,
     val reviewSubmitted: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val message: String? = null
 ) {
     val isOwnSeller: Boolean get() = order != null && order.seller.id == currentUserId
     val isOwnBuyer: Boolean get() = order != null && order.buyer.id == currentUserId
@@ -130,7 +131,7 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             state = state.copy(isCompleting = true, error = null)
             ordersRepository.updateStatus(orderId, "completed").fold(
-                onSuccess = { state = state.copy(isCompleting = false, order = it) },
+                onSuccess = { state = state.copy(isCompleting = false, order = it, message = "Заказ подтверждён") },
                 onFailure = { state = state.copy(isCompleting = false, error = it.toUserMessage()) }
             )
         }
@@ -141,7 +142,7 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             state = state.copy(isRefunding = true, error = null)
             ordersRepository.refund(orderId).fold(
-                onSuccess = { state = state.copy(isRefunding = false, order = it) },
+                onSuccess = { state = state.copy(isRefunding = false, order = it, message = "Деньги возвращены") },
                 onFailure = { state = state.copy(isRefunding = false, error = it.toUserMessage()) }
             )
         }
@@ -158,9 +159,13 @@ class ChatViewModel @Inject constructor(
                 rating = rating,
                 comment = comment.trim().ifBlank { null }
             ).fold(
-                onSuccess = { state = state.copy(isSubmittingReview = false, reviewSubmitted = true) },
+                onSuccess = { state = state.copy(isSubmittingReview = false, reviewSubmitted = true, message = "Отзыв отправлен") },
                 onFailure = { state = state.copy(isSubmittingReview = false, error = it.toUserMessage()) }
             )
         }
+    }
+
+    fun consumeMessage() {
+        state = state.copy(message = null)
     }
 }
