@@ -132,13 +132,19 @@ private fun OrderCard(order: Order, myRole: String, onClick: () -> Unit) {
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
-                Text(
-                    text = "%.0f ₽".format(order.lot.price),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = NeonEmerald,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
+                Column(horizontalAlignment = Alignment.End, modifier = Modifier.padding(start = 8.dp)) {
+                    Text(
+                        text = "%.0f ₽".format(order.lot.price * order.quantity),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = NeonEmerald,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "${order.quantity} шт.",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = TextMuted
+                    )
+                }
             }
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp),

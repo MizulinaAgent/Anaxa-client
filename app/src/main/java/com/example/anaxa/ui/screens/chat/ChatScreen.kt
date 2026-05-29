@@ -141,6 +141,9 @@ fun ChatScreen(
                     OrderBanner(
                         statusLabel = orderStatusLabel(state.order!!.status),
                         lotTitle = state.order!!.lot.title,
+                        summary = "${state.order!!.quantity} шт · итого %.0f ₽".format(
+                            state.order!!.lot.price * state.order!!.quantity
+                        ),
                         showComplete = state.canComplete,
                         isCompleting = state.isCompleting,
                         onComplete = viewModel::completeOrder,
@@ -181,6 +184,7 @@ fun ChatScreen(
 private fun OrderBanner(
     statusLabel: String,
     lotTitle: String,
+    summary: String,
     showComplete: Boolean,
     isCompleting: Boolean,
     onComplete: () -> Unit,
@@ -214,6 +218,11 @@ private fun OrderBanner(
                         .padding(horizontal = 10.dp, vertical = 6.dp)
                 )
             }
+            Text(
+                text = summary,
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextMuted
+            )
             if (showComplete) {
                 AnaxaButton(
                     text = "Подтвердить выполнение",
