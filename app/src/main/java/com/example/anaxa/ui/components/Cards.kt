@@ -51,8 +51,11 @@ fun GameCard(game: Game, onClick: () -> Unit, modifier: Modifier = Modifier) {
                     AsyncImage(
                         model = game.iconUrl,
                         contentDescription = game.name,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxWidth().aspectRatio(1f)
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .padding(12.dp)
                     )
                 } else {
                     Text(
