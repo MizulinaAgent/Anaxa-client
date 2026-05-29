@@ -21,10 +21,25 @@ import com.example.anaxa.ui.screens.chat.ChatScreen
 import com.example.anaxa.ui.screens.mylots.MyLotsScreen
 import com.example.anaxa.ui.screens.orders.OrdersScreen
 import com.example.anaxa.ui.screens.profile.ProfileScreen
+import com.example.anaxa.ui.screens.splash.SplashScreen
 
 @Composable
 fun AnaxaNavGraph(navController: NavHostController = rememberNavController()) {
-    NavHost(navController = navController, startDestination = Routes.AUTH) {
+    NavHost(navController = navController, startDestination = Routes.SPLASH) {
+        composable(Routes.SPLASH) {
+            SplashScreen(
+                onAuthenticated = {
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.SPLASH) { inclusive = true }
+                    }
+                },
+                onUnauthenticated = {
+                    navController.navigate(Routes.AUTH) {
+                        popUpTo(Routes.SPLASH) { inclusive = true }
+                    }
+                }
+            )
+        }
         composable(Routes.AUTH) {
             AuthScreen(
                 onAuthSuccess = {
