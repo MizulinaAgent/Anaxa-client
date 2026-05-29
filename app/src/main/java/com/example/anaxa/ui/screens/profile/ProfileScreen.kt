@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -45,6 +46,7 @@ import com.example.anaxa.ui.theme.NeonEmerald
 import com.example.anaxa.ui.theme.Surface
 import com.example.anaxa.ui.theme.TextMuted
 import com.example.anaxa.ui.theme.TextSecondary
+import com.example.anaxa.ui.util.relativeDays
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -170,11 +172,22 @@ private fun ReviewItem(review: Review) {
         colors = CardDefaults.cardColors(containerColor = Surface)
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(
-                text = review.reviewer.username,
-                style = MaterialTheme.typography.titleMedium,
-                color = TextSecondary
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = review.reviewer.username,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextSecondary
+                )
+                Text(
+                    text = relativeDays(review.createdAt),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = TextMuted
+                )
+            }
             RatingStars(rating = review.rating.toDouble(), starSize = 14, showValue = false)
             if (!review.comment.isNullOrBlank()) {
                 Text(
