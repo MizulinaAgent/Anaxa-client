@@ -31,7 +31,7 @@ data class ChatUiState(
 ) {
     val isOwnSeller: Boolean get() = order != null && order.seller.id == currentUserId
     val isOwnBuyer: Boolean get() = order != null && order.buyer.id == currentUserId
-    val canComplete: Boolean get() = isOwnSeller && order?.status != "completed"
+    val canComplete: Boolean get() = isOwnBuyer && order?.status != "completed" && order?.status != "cancelled"
     val canReview: Boolean get() = isOwnBuyer && order?.status == "completed" && !reviewSubmitted
 }
 

@@ -210,7 +210,7 @@ private fun OrderBanner(
             }
             if (showComplete) {
                 AnaxaButton(
-                    text = "Завершить заказ",
+                    text = "Подтвердить выполнение",
                     onClick = onComplete,
                     loading = isCompleting
                 )
