@@ -100,6 +100,12 @@ fun LotCard(lot: Lot, onClick: () -> Unit, modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
+            Text(
+                text = "В наличии: ${lot.quantity} шт.",
+                style = MaterialTheme.typography.labelMedium,
+                color = TextMuted,
+                modifier = Modifier.padding(top = 6.dp)
+            )
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,

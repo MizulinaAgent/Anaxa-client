@@ -160,6 +160,12 @@ fun CreateLotScreen(
                 label = "Цена, ₽",
                 keyboardType = KeyboardType.Number
             )
+            AnaxaTextField(
+                value = state.quantity,
+                onValueChange = viewModel::onQuantityChange,
+                label = "Количество в наличии",
+                keyboardType = KeyboardType.Number
+            )
 
             if (state.error != null) {
                 Text(state.error, color = ErrorRed, style = MaterialTheme.typography.bodyMedium)

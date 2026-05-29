@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +44,7 @@ import com.example.anaxa.ui.theme.EmeraldGradient
 import com.example.anaxa.ui.theme.ErrorRed
 import com.example.anaxa.ui.theme.NeonEmerald
 import com.example.anaxa.ui.theme.Surface
+import com.example.anaxa.ui.theme.SurfaceVariant
 import com.example.anaxa.ui.theme.TextMuted
 import com.example.anaxa.ui.theme.TextSecondary
 import com.example.anaxa.ui.util.categoryLabel
@@ -75,7 +78,7 @@ fun LotDetailScreen(
         },
         bottomBar = {
             val lot = state.lot
-            if (lot != null) {
+            if (lot != null && lot.status == "active") {
                 Column(modifier = Modifier.background(Background).padding(16.dp)) {
                     if (state.buyError != null) {
                         Text(
@@ -85,8 +88,24 @@ fun LotDetailScreen(
                             modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Количество",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextSecondary
+                        )
+                        QuantityStepper(
+                            value = state.quantity,
+                            max = lot.quantity,
+                            onChange = viewModel::setQuantity
+                        )
+                    }
                     AnaxaButton(
-                        text = "Купить за %.0f ₽".format(lot.price),
+                        text = "Купить за %.0f ₽".format(lot.price * state.quantity),
                         onClick = viewModel::buy,
                         loading = state.isBuying
                     )
@@ -117,6 +136,12 @@ fun LotDetailScreen(
                         style = MaterialTheme.typography.headlineLarge,
                         color = NeonEmerald,
                         fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = if (lot.status == "active") "В наличии: ${lot.quantity} шт."
+                        else "Лот продан",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (lot.status == "active") TextMuted else ErrorRed
                     )
 
                     Card(
@@ -162,6 +187,33 @@ fun LotDetailScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun QuantityStepper(value: Int, max: Int, onChange: (Int) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        IconButton(
+            onClick = { onChange(value - 1) },
+            enabled = value > 1
+        ) {
+            Icon(Icons.Filled.Remove, contentDescription = "Меньше", tint = NeonEmerald)
+        }
+        Text(
+            text = value.toString(),
+            style = MaterialTheme.typography.titleMedium,
+            color = TextSecondary,
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.small)
+                .background(SurfaceVariant)
+                .padding(horizontal = 16.dp, vertical = 6.dp)
+        )
+        IconButton(
+            onClick = { onChange(value + 1) },
+            enabled = value < max
+        ) {
+            Icon(Icons.Filled.Add, contentDescription = "Больше", tint = NeonEmerald)
         }
     }
 }
