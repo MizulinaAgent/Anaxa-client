@@ -143,7 +143,10 @@ fun ChatScreen(
                         lotTitle = state.order!!.lot.title,
                         showComplete = state.canComplete,
                         isCompleting = state.isCompleting,
-                        onComplete = viewModel::completeOrder
+                        onComplete = viewModel::completeOrder,
+                        showRefund = state.canRefund,
+                        isRefunding = state.isRefunding,
+                        onRefund = viewModel::refund
                     )
                 }
                 if (state.canReview) {
@@ -180,7 +183,10 @@ private fun OrderBanner(
     lotTitle: String,
     showComplete: Boolean,
     isCompleting: Boolean,
-    onComplete: () -> Unit
+    onComplete: () -> Unit,
+    showRefund: Boolean,
+    isRefunding: Boolean,
+    onRefund: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp),
@@ -213,6 +219,13 @@ private fun OrderBanner(
                     text = "Подтвердить выполнение",
                     onClick = onComplete,
                     loading = isCompleting
+                )
+            }
+            if (showRefund) {
+                AnaxaButton(
+                    text = "Вернуть деньги",
+                    onClick = onRefund,
+                    loading = isRefunding
                 )
             }
         }

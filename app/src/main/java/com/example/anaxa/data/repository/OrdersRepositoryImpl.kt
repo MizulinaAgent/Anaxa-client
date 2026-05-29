@@ -23,4 +23,7 @@ class OrdersRepositoryImpl @Inject constructor(
 
     override suspend fun updateStatus(id: String, status: String): Result<Order> =
         runCatching { api.updateStatus(id, OrderStatusRequest(status)).toDomain() }
+
+    override suspend fun refund(id: String): Result<Order> =
+        runCatching { api.refund(id).toDomain() }
 }

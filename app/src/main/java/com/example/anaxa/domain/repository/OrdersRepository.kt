@@ -7,4 +7,5 @@ interface OrdersRepository {
     suspend fun getOrder(id: String): Result<Order>
     suspend fun getMyOrders(role: String): Result<List<Order>>
     suspend fun updateStatus(id: String, status: String): Result<Order>
+    suspend fun refund(id: String): Result<Order>
 }

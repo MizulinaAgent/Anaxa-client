@@ -22,4 +22,7 @@ interface OrdersApi {
 
     @PUT("orders/{id}/status")
     suspend fun updateStatus(@Path("id") id: String, @Body body: OrderStatusRequest): OrderDto
+
+    @POST("orders/{id}/refund")
+    suspend fun refund(@Path("id") id: String): OrderDto
 }

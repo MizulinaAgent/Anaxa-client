@@ -25,6 +25,7 @@ data class ChatUiState(
     val isLoading: Boolean = false,
     val isSending: Boolean = false,
     val isCompleting: Boolean = false,
+    val isRefunding: Boolean = false,
     val isSubmittingReview: Boolean = false,
     val reviewSubmitted: Boolean = false,
     val error: String? = null
@@ -33,6 +34,7 @@ data class ChatUiState(
     val isOwnBuyer: Boolean get() = order != null && order.buyer.id == currentUserId
     val canComplete: Boolean get() = isOwnBuyer && order?.status != "completed" && order?.status != "cancelled"
     val canReview: Boolean get() = isOwnBuyer && order?.status == "completed" && !reviewSubmitted
+    val canRefund: Boolean get() = isOwnSeller && order?.status != "cancelled"
 }
 
 @HiltViewModel
@@ -113,6 +115,17 @@ class ChatViewModel @Inject constructor(
             ordersRepository.updateStatus(orderId, "completed").fold(
                 onSuccess = { state = state.copy(isCompleting = false, order = it) },
                 onFailure = { state = state.copy(isCompleting = false, error = it.toUserMessage()) }
+            )
+        }
+    }
+
+    fun refund() {
+        if (state.isRefunding) return
+        viewModelScope.launch {
+            state = state.copy(isRefunding = true, error = null)
+            ordersRepository.refund(orderId).fold(
+                onSuccess = { state = state.copy(isRefunding = false, order = it) },
+                onFailure = { state = state.copy(isRefunding = false, error = it.toUserMessage()) }
             )
         }
     }
